@@ -1,6 +1,10 @@
 let AWS = require('aws-sdk');
+
 let JSZip = require("jszip");
+
 let fs = require("fs");
+
+const s3 = new AWS.S3();
 exports.handler = function (event, context, callback) {
 
 	var zip = new JSZip();
