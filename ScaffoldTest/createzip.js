@@ -4,7 +4,7 @@ let fs = require("fs");
 exports.handler = function (event, context, callback) {
 
 	var zip = new JSZip();
-	zip.file("k16.txt", "generated\n");
+	zip.file("k16.txt", "generated");
 	zip.generateAsync({type : "uint8array"})
 
 					.pipe(fs.createWriteStream(tmpPath))
