@@ -5,7 +5,8 @@ exports.handler = function (event, context, callback) {
 
 	var zip = new JSZip();
 	zip.file("k16.txt", "generated");
-	zip.generateAsync({type : "uint8array"})
+	let tmpPath = `/tmp/${event.path}`
+	zip.generateNodeStream({type : "uint8array"})
 
 					.pipe(fs.createWriteStream(tmpPath))
 
