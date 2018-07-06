@@ -6,7 +6,7 @@ exports.handler = function (event, context, callback) {
 		'Key': event.pathParameters['item']
 	}).promise()
 		.then(data => {
-			callback(null,data)
+			callback(null,event)
 		})
 		.catch(err => {
 			callback(err); // an error occurred
