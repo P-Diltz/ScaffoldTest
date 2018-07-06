@@ -37,9 +37,7 @@ exports.handler = function (event, context, callback) {
 
 								callback(null, {
 
-									modified: modified,
-
-									removed: removed
+									created: true
 
 								});
 
