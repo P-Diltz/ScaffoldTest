@@ -12,7 +12,7 @@ exports.handler = function (event, context, callback) {
 		ddb.put({
 			TableName: 'testlistener',
 			Item: {
-				'testid': Date.now(),
+				'testid': Date.now().toString(),
 				'message': event.Records[i].Sns.Message
 			}
 		}, function (err, data) {
