@@ -5,6 +5,8 @@ const sns = new AWS.SNS();
 
 
 exports.handler = (event, context, callback) => {
+
+
 	//console.log('Received event:', JSON.stringify(event, null, 2));
 
 
@@ -15,7 +17,7 @@ exports.handler = (event, context, callback) => {
 		TableName: 'learning_objects',
 		IndexName: "course-index",
 		ExpressionAttributeValues: {
-			":c": event.pathParameters['course']
+			":c": event.course
 		},
 		ProjectionExpression: "objectID,title,parent",
 		KeyConditionExpression: "course = :c",
