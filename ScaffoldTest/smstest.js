@@ -4,7 +4,7 @@ exports.handler = function (event, context, callback) {
 
 	for (var i = 0; i < event.items.length; i++) {
 		sns.publish({
-			Message: event.items.body,
+			Message: event.items[i].body,
 			Subject: 'create',
 			MessageAttributes: {},
 			MessageStructure: 'String',
@@ -19,5 +19,5 @@ exports.handler = function (event, context, callback) {
 
 	}
 
-	callback(null, 'Successfully executed');
+	//callback(null, 'Successfully executed');
 }
