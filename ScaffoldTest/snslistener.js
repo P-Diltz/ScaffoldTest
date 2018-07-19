@@ -7,7 +7,6 @@ let fs = require("fs");
 const s3 = new AWS.S3();
 
 const ddb = new AWS.DynamoDB.DocumentClient();
-
 exports.handler = function (event, context, callback) {
 	console.log("Adding DB entry:" + JSON.stringify(event))
 	var file = "course3.imscc";
@@ -15,9 +14,9 @@ exports.handler = function (event, context, callback) {
 		var item = JSON.parse(event.Records[i].Sns.Message);
 		var name = item.title + ".json"
 		ddb.get({
-			TableName: 'Outcomes',
+			TableName: 'learning_objects',
 			Key: {
-				'outcome_id': item.objectID
+				'objectID': item.objectID
 			}
 		}, function (err, cdata) {
 			if (err) {
