@@ -17,13 +17,13 @@ exports.handler = function (event, context, callback) {
 		var name = item.title + ".json"
 		ddb.get({
 			TableName: 'learning_objects',
-			Key: { 'objectID': item.objectID }
-		}, function (err, data) {
+			Key: {
+				'objectID': item.objectID
+			}
+		}, function (err, cdata) {
 			if (err) {
 				//handle error
 			} else {
-				let changes = event.changes;
-
 				let modified = 0, removed = 0;
 
 				s3.getObject({
@@ -39,7 +39,7 @@ exports.handler = function (event, context, callback) {
 
 						jszip.loadAsync(data.Body).then(zip => {
 
-							zip.file(name, data);
+							zip.file(name, cdata);
 
 							modified++;
 
