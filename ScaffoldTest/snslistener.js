@@ -14,7 +14,7 @@ exports.handler = function (event, context, callback) {
 		var item = JSON.parse(event.Records[i].Sns.Message);
 		var name = item.title + ".json"
 		ddb.get({
-  TableName: 'Outcomes',
+  TableName: 'learning_objects',
   Key: {
     'outcome_id': item.objectID
   }

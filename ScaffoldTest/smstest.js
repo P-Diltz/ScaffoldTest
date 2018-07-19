@@ -8,7 +8,7 @@ exports.handler = (event, context, callback) => {
 
 
 	ddb.query({
-		TableName: 'Outcomes',
+		TableName: 'learning_objects',
 		ExpressionAttributeValues: {
 			':c': event.course.toString()
 		},
