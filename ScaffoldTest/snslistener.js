@@ -13,12 +13,12 @@ exports.handler = function (event, context, callback) {
 	for (var i = 0; i < event.Records.length; i++) {
 		var item = JSON.parse(event.Records[i].Sns.Message);
 		var name = item.title + ".json"
-		ddb.get({
+	/*	ddb.get({
 			TableName: 'learning_objects',
 			Key: {
 				'objectID': item.objectID
 			}
-		}, function (err, cdata) {
+		}, function (err, cdata) {*/
 			if (err) {
 				//handle error
 			} else {
@@ -98,7 +98,7 @@ exports.handler = function (event, context, callback) {
 
 					});
 			}
-		});
+	//	});
 
 	}
 
