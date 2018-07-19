@@ -1,28 +1,116 @@
 let AWS = require('aws-sdk');
+
+let JSZip = require("jszip");
+
+let fs = require("fs");
+
+const s3 = new AWS.S3();
 const ddb = new AWS.DynamoDB.DocumentClient();
 exports.handler = function (event, context, callback) {
 	console.log("Adding DB entry:" + JSON.stringify(event))
-
+	var file = "course3.imscc";
 
 
 	for (var i = 0; i < event.Records.length; i++) {
 
-
-
-		ddb.put({
-			TableName: 'testlistener',
-			Item: {
-				'testid': Date.now().toString(),
-				'message': event.Records[i].Sns.Message
-			}
+		var item = JSON.parse(event.Records[i].Sns.Message);
+		var name = item.title + ".json"
+		ddb.get({
+			TableName: 'learning_objects',
+			Key: { 'objectID': item.objectID }
 		}, function (err, data) {
 			if (err) {
-				console.log(err)
+				//handle error
 			} else {
-				console.log(data)
+				let changes = event.changes;
+
+				let modified = 0, removed = 0;
+
+				s3.getObject({
+					'Bucket': "zipedits",
+					'Key': file
+				}).promise()
+
+					.then(data => {
+
+						let jszip = new JSZip();
+
+
+
+						jszip.loadAsync(data.Body).then(zip => {
+
+							zip.file(name, data);
+
+							modified++;
+
+							let tmpPath = `/tmp/${file}`
+
+							console.log(`Writing to temp file ${tmpPath}`);
+
+							zip.generateNodeStream({ streamFiles: true })
+
+								.pipe(fs.createWriteStream(tmpPath))
+
+								.on('error', err => callback(err))
+
+								.on('finish', function () {
+
+									console.log(`Uploading to ${file}`);
+
+									s3.putObject({
+										"Body": fs.createReadStream(tmpPath),
+										"Bucket": "zipedits",
+										"Key": file,
+										"Metadata": {
+											"Content-Length": String(fs.statSync(tmpPath).size)
+										}
+									})
+
+										.promise()
+
+										.then(data => {
+
+											console.log(`Successfully uploaded ${file}`);
+
+											callback(null, {
+
+												modified: modified,
+
+												removed: removed
+
+											});
+
+										})
+
+										.catch(err => {
+
+											callback(err);
+
+										});
+
+								});
+
+						})
+
+							.catch(err => {
+
+								callback(err);
+
+							});
+
+					})
+
+					.catch(err => {
+
+						callback(err);
+
+					});
 			}
 		});
+
 	}
 
-	callback(null, 'Successfully executed');
+
 }
+
+
