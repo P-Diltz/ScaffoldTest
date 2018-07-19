@@ -8,19 +8,20 @@ exports.handler = (event, context, callback) => {
 
 
 	ddb.query({
-		"TableName": "learning_objects",
-		"IndexName": "course-index",
-		"KeyConditionExpression": "course = :c",
-		"ExpressionAttributeValues": {
-			":c": event.course.toString()
+		TableName: 'Outcomes',
+		ExpressionAttributeValues: {
+			':c': event.course.toString()
 		},
+		KeyConditionExpression: 'course = :c',
+		FilterExpression: '',
+		"IndexName": "course-index",
 		"ProjectionExpression": "objectID,title,parent",
 		"ScanIndexForward": false
 	}, function (err, data) {
 		if (err) {
 			callback(err);
 		} else {
-			for (var i = 0; i <data.length; i++) {
+			for (var i = 0; i < data.length; i++) {
 				sns.publish({
 					Message: JSON.stringify(data[i]),
 					Subject: 'create',
