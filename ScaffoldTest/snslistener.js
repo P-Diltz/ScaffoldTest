@@ -5,38 +5,31 @@ let JSZip = require("jszip");
 let fs = require("fs");
 
 const s3 = new AWS.S3();
+
 const ddb = new AWS.DynamoDB.DocumentClient();
+
 exports.handler = function (event, context, callback) {
 	console.log("Adding DB entry:" + JSON.stringify(event))
 	var file = "course3.imscc";
-
-
 	for (var i = 0; i < event.Records.length; i++) {
-
 		var item = JSON.parse(event.Records[i].Sns.Message);
 		var name = item.title + ".json"
 		ddb.get({
-			TableName: 'learning_objects',
+			TableName: 'Outcomes',
 			Key: {
-				'objectID': item.objectID
+				'outcome_id': item.objectID
 			}
 		}, function (err, cdata) {
 			if (err) {
 				//handle error
 			} else {
 				let modified = 0, removed = 0;
-
 				s3.getObject({
 					'Bucket': "zipedits",
 					'Key': file
 				}).promise()
-
 					.then(data => {
-
 						let jszip = new JSZip();
-
-
-
 						jszip.loadAsync(data.Body).then(zip => {
 
 							zip.file(name, cdata);
