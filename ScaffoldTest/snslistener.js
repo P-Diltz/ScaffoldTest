@@ -1,4 +1,5 @@
 let AWS = require('aws-sdk');
+let http = require('http');
 
 let JSZip = require("jszip");
 
@@ -13,15 +14,10 @@ exports.handler = function (event, context, callback) {
 	for (var i = 0; i < event.Records.length; i++) {
 		var item = JSON.parse(event.Records[i].Sns.Message);
 		var name = item.title + ".json"
-		ddb.get({
-  TableName: 'learning_objects',
-  Key: {
-    'outcome_id': item.objectID
-  }
-}, function (err, cdata) {
-			if (err) {
-				//handle error
-			} else {
+		http.get({
+			
+		}, function (cdata) {
+			
 				let modified = 0, removed = 0;
 				s3.getObject({
 					'Bucket': "zipedits",
@@ -97,8 +93,10 @@ exports.handler = function (event, context, callback) {
 						callback(err);
 
 					});
-			}
-		});
+			
+		}).on('error', function (err) {
+        callback(err);
+    });
 
 	}
 

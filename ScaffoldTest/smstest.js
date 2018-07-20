@@ -1,26 +1,16 @@
 let AWS = require('aws-sdk');
+let http = require('http');
 const ddb = new AWS.DynamoDB.DocumentClient();
 const sns = new AWS.SNS();
+
 
 
 
 exports.handler = (event, context, callback) => {
 
 
-	ddb.query({
-		TableName: 'learning_objects',
-		ExpressionAttributeValues: {
-			':c': event.course.toString()
-		},
-		KeyConditionExpression: 'course = :c',
-		FilterExpression: '',
-		"IndexName": "course-index",
-		"ProjectionExpression": "objectID,title,parent",
-		"ScanIndexForward": false
-	}, function (err, data) {
-		if (err) {
-			callback(err);
-		} else {
+	http.get("https://g7rrfbiyb1.execute-api.us-east-2.amazonaws.com/prod/newapi/item/3", function (data) {
+
 			for (var i = 0; i < data.length; i++) {
 				sns.publish({
 					Message: JSON.stringify(data[i]),
@@ -37,8 +27,11 @@ exports.handler = (event, context, callback) => {
 					});
 
 			}
-		}
-	});
+		
+	}).on('error', function (err) {
+        callback(err);
+    });
+;
 	/*for (var i = 0; i < event.items.length; i++) {
 		sns.publish({
 			Message: event.items[i].body,
