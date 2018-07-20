@@ -1,19 +1,12 @@
-let AWS = require('aws-sdk');
 let request = require('request');
 
-let JSZip = require("jszip");
-
-let fs = require("fs");
-
-const s3 = new AWS.S3();
-
-const ddb = new AWS.DynamoDB.DocumentClient();
 exports.handler = function (event, context, callback) {
 	console.log("Adding DB entry:" + JSON.stringify(event))
-	var file = "test.imscc";
+	var file = "Demo Course 3.imscc";
 	for (var i = 0; i < event.Records.length; i++) {
 		var item = JSON.parse(event.Records[i].Sns.Message);
 		var name = item.title + ".json"
+		console.log(item);
 		request('https://g7rrfbiyb1.execute-api.us-east-2.amazonaws.com/prod/newapi/item?item=' + item.objectID, { json: true }, (err, res, cdata) => {
 			if (err) { callback(err); } else {
 				var changes = {};
@@ -23,12 +16,15 @@ exports.handler = function (event, context, callback) {
 					method: 'POST',
 					json: {
 						"path": file,
-						"changes":changes
+						"changes":JSON.stringify(changes)
 					}
 				};
+				console.log(options);
 				request(options, function (error, response, body) {
 					if (!error) {
-						console.log(body) // Print the shortened url.
+						callback(JSON.stringify(body)) // Print the shortened url.
+					}else{
+						callback(JSON.stringify(error));
 					}
 				});
 			}

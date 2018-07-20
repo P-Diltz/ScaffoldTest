@@ -1,6 +1,5 @@
 let AWS = require('aws-sdk');
 let request = require('request');
-const ddb = new AWS.DynamoDB.DocumentClient();
 const sns = new AWS.SNS();
 
 
