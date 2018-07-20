@@ -10,7 +10,7 @@ exports.handler = (event, context, callback) => {
 
 console.log("https://g7rrfbiyb1.execute-api.us-east-2.amazonaws.com/prod/newapi/item/" + event.course);
 	request("https://g7rrfbiyb1.execute-api.us-east-2.amazonaws.com/prod/newapi/item/" + event.course, { json: true }, (err, res, data) => {
-		if (err) { return console.log(err); }else{
+		if (err) { callback(err); }else{
 		console.log(data);
 			for (var i = 0; i < data.length; i++) {
 				sns.publish({

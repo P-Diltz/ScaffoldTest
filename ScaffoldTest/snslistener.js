@@ -1,5 +1,5 @@
 let AWS = require('aws-sdk');
-let http = require('http');
+let request = require('request');
 
 let JSZip = require("jszip");
 
@@ -14,10 +14,8 @@ exports.handler = function (event, context, callback) {
 	for (var i = 0; i < event.Records.length; i++) {
 		var item = JSON.parse(event.Records[i].Sns.Message);
 		var name = item.title + ".json"
-		http.get('https://g7rrfbiyb1.execute-api.us-east-2.amazonaws.com/prod/newapi/item?item='+item.objectID,{
-			
-		}, function (cdata) {
-			
+		request('https://g7rrfbiyb1.execute-api.us-east-2.amazonaws.com/prod/newapi/item?item=' + item.objectID, { json: true }, (err, res, cdata) => {
+			if (err) { callback(err); } else {
 				let modified = 0, removed = 0;
 				s3.getObject({
 					'Bucket': "zipedits",
@@ -43,6 +41,7 @@ exports.handler = function (event, context, callback) {
 
 								.on('finish', function () {
 
+									
 									console.log(`Uploading to ${file}`);
 
 									s3.putObject({
@@ -93,10 +92,9 @@ exports.handler = function (event, context, callback) {
 						callback(err);
 
 					});
-			
-		}).on('error', function (err) {
-        callback(err);
-    });
+			}
+
+		});
 
 	}
 
