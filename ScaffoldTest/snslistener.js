@@ -14,7 +14,7 @@ exports.handler = function (event, context, callback) {
 	for (var i = 0; i < event.Records.length; i++) {
 		var item = JSON.parse(event.Records[i].Sns.Message);
 		var name = item.title + ".json"
-		http.get({
+		http.get('https://g7rrfbiyb1.execute-api.us-east-2.amazonaws.com/prod/newapi/item?item='+item.objectID,{
 			
 		}, function (cdata) {
 			

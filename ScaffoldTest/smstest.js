@@ -1,5 +1,5 @@
 let AWS = require('aws-sdk');
-let http = require('http');
+let request = require('request');
 const ddb = new AWS.DynamoDB.DocumentClient();
 const sns = new AWS.SNS();
 
@@ -8,9 +8,10 @@ const sns = new AWS.SNS();
 
 exports.handler = (event, context, callback) => {
 
-
-	http.get("https://g7rrfbiyb1.execute-api.us-east-2.amazonaws.com/prod/newapi/item/3", function (data) {
-
+console.log("https://g7rrfbiyb1.execute-api.us-east-2.amazonaws.com/prod/newapi/item/" + event.course);
+	request("https://g7rrfbiyb1.execute-api.us-east-2.amazonaws.com/prod/newapi/item/" + event.course, { json: true }, (err, res, data) => {
+		if (err) { return console.log(err); }else{
+		console.log(data);
 			for (var i = 0; i < data.length; i++) {
 				sns.publish({
 					Message: JSON.stringify(data[i]),
@@ -27,11 +28,10 @@ exports.handler = (event, context, callback) => {
 					});
 
 			}
+		}
 		
-	}).on('error', function (err) {
-        callback(err);
-    });
-;
+	});
+
 	/*for (var i = 0; i < event.items.length; i++) {
 		sns.publish({
 			Message: event.items[i].body,
