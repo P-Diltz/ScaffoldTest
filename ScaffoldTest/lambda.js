@@ -31,10 +31,10 @@ exports.handler = function (event, context, callback) {
 	let changes = event.changes;
 
 	let modified = 0, removed = 0;
-
+	console.log(event);
 	console.log(`Fetching ${event.path}`);
 
-	s3.getObject({
+	/*s3.getObject({
 		'Bucket': "zipedits",
 		'Key': event.path
 	}).promise()
@@ -132,6 +132,7 @@ exports.handler = function (event, context, callback) {
 
 			callback(err);
 
-		});
+		});*/
+		callback(event)
 
 }

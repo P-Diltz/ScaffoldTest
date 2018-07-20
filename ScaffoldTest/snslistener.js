@@ -12,7 +12,7 @@ exports.handler = function (event, context, callback) {
 				var changes = {};
 				changes[name] = cdata;
 				var options = {
-					uri: 'https://5a3kmwmhr8.execute-api.us-east-2.amazonaws.com/Prod/edit',
+					uri: 'https://5a3kmwmhr8.execute-api.us-east-2.amazonaws.com/Prod/edits',
 					method: 'POST',
 					json: {
 						"path": file,
