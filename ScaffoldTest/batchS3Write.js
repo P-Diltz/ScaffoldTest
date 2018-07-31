@@ -6,9 +6,14 @@ let fs = require("fs");
 
 const s3 = new AWS.S3();
 exports.handler = function (event, context, callback) {
-	var file = "Demo Course 3.imscc";
+	var file = event.title + ".imscc";
 	var item = event.Items[event.processed];
-
+	event.processed++;
+	if (event.processed < event.Count) {
+		event.continue = true;
+	} else {
+		event.continue = false;
+	}
 	var name = item.title + ".json"
 	console.log(item);
 	dynamo.getItem({
@@ -19,113 +24,51 @@ exports.handler = function (event, context, callback) {
 	}, (err, cdata) => {
 		if (err) { callback(err); } else {
 			var changes = {};
-			changes[name] = cdata;
-
-				s3.getObject({
+			changes[name] = JSON.stringify(cdata);
+			s3.getObject({
 				'Bucket': "zipedits",
-				'Key': name
+				'Key': file
 			}).promise()
-
 				.then(data => {
-
 					let jszip = new JSZip();
-
-					console.log(`Opening ${name}`);
-
 					jszip.loadAsync(data.Body).then(zip => {
-
-						console.log(`Opened ${name} as zip`);
-
 						Object.keys(changes).forEach(name => {
-
 							if (changes[name] !== null) {
-
-								console.log(`Modify ${name}`);
-
 								zip.file(name, changes[name]);
-
-								modified++;
-
 							} else {
-
-								console.log(`Remove ${name}`);
-
 								zip.remove(name);
-
-								removed++;
-
 							}
-
 						});
-
-						let tmpPath = `/tmp/${name}`
-
-						console.log(`Writing to temp file ${tmpPath}`);
-
+						let tmpPath = `/tmp/${file}`
 						zip.generateNodeStream({ streamFiles: true })
-
 							.pipe(fs.createWriteStream(tmpPath))
-
 							.on('error', err => callback(err))
-
 							.on('finish', function () {
-
-								console.log(`Uploading to ${name}`);
-
 								s3.putObject({
 									"Body": fs.createReadStream(tmpPath),
 									"Bucket": "zipedits",
-									"Key": name,
+									"Key": file,
 									"Metadata": {
 										"Content-Length": String(fs.statSync(tmpPath).size)
 									}
 								})
-
 									.promise()
-
 									.then(data => {
-
-										console.log(`Successfully uploaded ${name}`);
-
-										callback(null, {
-
-											modified: modified,
-
-											removed: removed
-
-										});
-
+										callback(null, event);
 									})
-
 									.catch(err => {
-
 										callback(err);
-
 									});
-
 							});
-
 					})
-
 						.catch(err => {
-
 							callback(err);
-
 						});
-
 				})
-
 				.catch(err => {
-
 					callback(err);
-
 				});
 		}
-
 	});
-
-
-
-
 }
 
