@@ -24,8 +24,10 @@ exports.handler = (event, context, callback) => {
 
 			base = base.replace(/\{\{title\}\}/, event.title);
 			var modules = '<item identifier="LearningModules">';
+			console.log(res.Item.modules);
 			for (var i = 0; i < res.Item.modules.length; i++) {
-				modules + '=<item identifier="' + event.course + 'm' + i + '"><title>' + res.Item.modules[i].name + '</title>{{module_' + res.Item.modules[i].module_id +'_items}}';
+				console.log(res.Item.modules[i])
+				modules += '<item identifier="' + event.course + 'm' + i + '"><title>' + res.Item.modules[i].name + '</title>{{module_' + res.Item.modules[i].module_id +'_items}}</item>';
 			}
 			modules += '</item>';
 			base = base.replace(/\{\{organization\}\}/, modules);

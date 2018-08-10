@@ -14,7 +14,7 @@ exports.handler = function (event, context, callback) {
 	} else {
 		event.continue = false;
 	}
-	var name = item.title + ".json"
+	var name = "wiki_content/" + item.title + ".json"
 	console.log(item);
 	dynamo.getItem({
 		"TableName": "learning_objects",
